@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
+    <title>ArcGIS Maps SDK for JavaScript Tutorials: Implement user authentication</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.28/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.28/"></script>
+    <style>
+        html, body, #viewDiv {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background-color: #0079c1;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.3s;
+        }
+
+            .btn:hover {
+                background-color: #005a8c;
+            }
+
+            .btn:active {
+                background-color: #003d62;
+            }
+
+        .heading {
+            text-align: center;
+            font-size: 2em;
+            margin-top: 50px;
+            color: #0079c1;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+   require([
+     "esri/portal/Portal",
+     "esri/identity/OAuthInfo",
+     "esri/identity/IdentityManager",
+     "esri/Map",
+     "esri/views/MapView",
+    "esri/WebMap"
+   ], function (Portal, OAuthInfo, esriId, Map, MapView, WebMap) {
+     const info = new OAuthInfo({
+         appId: "Jx3LgPM7JI0QkgcA",
+       popup: false // the default
+     });
+     esriId.registerOAuthInfos([info]);
+     esriId
+       .checkSignInStatus(info.portalUrl + "/sharing")
+       .then(() => {
+         handleSignedIn();
+       })
+       .catch(() => {
+         handleSignedOut();
+       });
+     document.getElementById("sign-in").addEventListener("click", function () {
+       esriId.getCredential(info.portalUrl + "/sharing");
+     });
+     document.getElementById("sign-out").addEventListener("click", function () {
+       esriId.destroyCredentials();
+       window.location.reload();
+     });
+     function handleSignedIn() {
+       const portal = new Portal();
+       portal.load().then(() => {
+         const results = { name: portal.user.fullName, username: portal.user.username };
+         document.getElementById("results").innerText = JSON.stringify(results, null, 2);
+         // Create a WebMap and view
+         const webmap = new WebMap({
+           portalItem: {
+             id: "860e729d630f46959e10dc196eaab6ff"
+           }
+         });
+         const view = new MapView({
+           container: "viewDiv",
+           map: webmap
+         });
+         // Hide the heading when signed in
+         document.getElementById("heading").style.display = "none";
+       });
+     }
+     function handleSignedOut() {
+       document.getElementById("results").innerText = 'Signed Out';
+       // Show the heading when signed out
+       document.getElementById("heading").style.display = "block";
+     }
+   });
+    </script>
+</head>
+<body>
+    <div class="button-container">
+        <button id="sign-in" class="btn">Sign In</button>
+        <button id="sign-out" class="btn">Sign Out</button>
+    </div>
+    <h2 id="heading" class="heading">Using User Authentication with the ArcGIS Maps SDK for JS!</h2>
+<pre><code id="results"></code></pre>
+    <div id="viewDiv"></div> <!-- Container for the map -->
+</body>
+</html>
