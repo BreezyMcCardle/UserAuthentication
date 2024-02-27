@@ -58,7 +58,7 @@
     "esri/WebMap"
    ], function (Portal, OAuthInfo, esriId, Map, MapView, WebMap) {
      const info = new OAuthInfo({
-         appId: "Jx3LgPM7JI0QkgcA",
+         appId: "<ENTER CLIENT ID>",
        popup: false // the default
      });
      esriId.registerOAuthInfos([info]);
@@ -85,7 +85,7 @@
          // Create a WebMap and view
          const webmap = new WebMap({
            portalItem: {
-             id: "860e729d630f46959e10dc196eaab6ff"
+             id: "<ENTER WEB MAP ID>"
            }
          });
          const view = new MapView({
